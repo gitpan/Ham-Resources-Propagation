@@ -8,6 +8,7 @@
 
 use strict;
 use warnings;
+use lib '../lib';
 use Ham::Resources::Propagation;
 
 my $data = shift;

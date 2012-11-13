@@ -3,13 +3,13 @@ package Ham::Resources::Propagation;
 use strict;
 use warnings;
 use LWP::UserAgent;
-use XML::Reader;
+use XML::Reader::PP;
 
-#use Data::Dumper;
+use Data::Dumper;
 
 use vars qw($VERSION);
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 my $data_url = 'http://www.hamqsl.com/solarxml.php';
 my $site_name = 'hamqsl.com';
@@ -65,12 +65,12 @@ sub error_message { my $self = shift; $self->{error_message} }
 sub _data_init
 {
 	my $self = shift;
-	my $content = $self->_get_content($data_url) || return 0;
+	my $content = $self->_get_content($data_url) or return 0;
 	my $data;
 
-	my $xml = XML::Reader->new(\$content) or die $self->{error_message} = "Error to read XML of $site_name - ".$!;	
+	my $xml = XML::Reader::PP->new(\$content) or return $self->{error_message} = "Error to read XML of $site_name - ".$!;	
 	my $p_data;
-	
+
 	while ($xml->iterate) {
 		# Solar datas	
 		if ($xml->value ne '' && $xml->path !~ /calculated/ && $xml->tag ne '@url' && $xml->tag ne 'source') 

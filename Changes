@@ -2,5 +2,10 @@ Revision history for Perl extension Ham::Resources::Propagation.
 
 0.01  Fri Dec 02 2011
 		- First working version
+0.02	Thu Nov 13 2012
+		- Fixed bug: don't call method new (XML::Reader). 
+			Change XML::Reader for XML::Reader::PP
+		- Use 5.014
+
 
 		

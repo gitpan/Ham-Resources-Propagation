@@ -12,7 +12,7 @@ use lib '../lib';
 use Ham::Resources::Propagation;
 
 my $data = shift;
-my $groups = qr/solar|hf|vhf|extended/i;
+my $groups = qr/solar_data|hf|vhf|extended/i;
 
 chomp($data);
 
@@ -79,6 +79,4 @@ if ($data !~ $groups)
 	print "\n\n";
 	exit 1;
 }
-
-
 

@@ -9,14 +9,14 @@ use Data::Dumper;
 
 use vars qw($VERSION);
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 my $data_url = 'http://www.hamqsl.com/solarxml.php';
 my $site_name = 'hamqsl.com';
 my $default_timeout = 10;
 my $default_description = 'text'; # maybe 'text' or 'numeric'
 
-my @items = ('solar', 'hf', 'vhf', 'extended');
+my @items = ('solar_data', 'hf', 'vhf', 'extended');
 my @scale = ('Normal', 'Active', 'Minor', 'Moderate', 'Strong', 'Severe', 'Extreme');
 
 sub new
@@ -40,7 +40,7 @@ sub get_groups
 sub get
 {
 	my ($self, $item) = @_;
-	$self->{solar}->{$item} || $self->{hf}->{$item} || $self->{vhf}->{$item} || $self->{extended}->{$item} || return ($self->{error_mesage} = "Don't found this key ".$item);
+	$self->{solar_data}->{$item} || $self->{hf}->{$item} || $self->{vhf}->{$item} || $self->{extended}->{$item} || return ($self->{error_mesage} = "Don't found this key ".$item);
 }
 
 sub all_item_names
@@ -84,7 +84,7 @@ sub _data_init
 			if($xml->tag eq 'electonflux') { $data = $self->_add_electronflux_text($xml->value); }
 			if($xml->tag eq 'solarflux') { $data = $self->_add_solarflux_text($xml->value); }
 		
-			$self->{solar}->{$xml->tag} = $data;
+			$self->{solar_data}->{$xml->tag} = $data;
 		}
 
 		# Propagation		
@@ -162,7 +162,7 @@ sub _add_xray_text
 		'X1[0-9]'	=> $scale[5].'| 8 flares per cycle. HF blackout on most of sunlit side for 1 to 2 hours.',
 		'X2[0-9?]'	=> $scale[6].'| 1 flare per cycle. Complete HF blackout on entire sunlit side lasting hours.',
 	);
-		
+	
 	foreach my $xray_key (keys %xray_defs)
 	{
 		if ($num =~ /$xray_key/i) 
@@ -175,6 +175,7 @@ sub _add_xray_text
 			$self->{extended}->{radioblackout} = $radioblackout;
 			my ($xray_resume_data) = $xray_complete_data =~ /^(.+)\|.+/;
 			$num = $xray_resume_data if $self->{description} ne 'numeric';
+			return $num;
 		}
 	}
 	return $num;
@@ -239,32 +240,32 @@ sub _add_solarflux_text
 	if ($num <= 70) 
 	{ 
 		$solarflux_def = $scale[0].'| Bands above 40m unusuable.'; 
-		$self->{solar}->{SN} = $sn_ratio[0]; 
+		$self->{solar_data}->{SN} = $sn_ratio[0]; 
 	};
 	if ($num > 70 && $num <= 90) 
 	{
 		$solarflux_def = $scale[1].'| Poor to fair conditions all bands up through.'; 
-		$self->{solar}->{SN} = $sn_ratio[1]; 
+		$self->{solar_data}->{SN} = $sn_ratio[1]; 
 	};
 	if ($num > 90 && $num <= 120) 
 	{
 		$solarflux_def = $scale[2].'| Fair conditions all bands up through 15m.'; 
-		$self->{solar}->{SN} = $sn_ratio[2]; 
+		$self->{solar_data}->{SN} = $sn_ratio[2]; 
 	};
 	if ($num > 120 && $num <= 150) 
 	{
 		$solarflux_def = $scale[3].'| Fair to good conditions all bands up through 10m.'; 
-		$self->{solar}->{SN} = $sn_ratio[3]; 
+		$self->{solar_data}->{SN} = $sn_ratio[3]; 
 	};
 	if ($num > 150 && $num <= 200) 
 	{
 		$solarflux_def = $scale[4].'| Excelent conditions all bands up through 10m w/6m openings.'; 
-		$self->{solar}->{SN} = $sn_ratio[4]; 
+		$self->{solar_data}->{SN} = $sn_ratio[4]; 
 	};
 	if ($num > 200) 
 	{
 		$solarflux_def = $scale[5].'| Reliable communications all bands up through 6m.'; 
-		$self->{solar}->{SN} = $sn_ratio[5]; 
+		$self->{solar_data}->{SN} = $sn_ratio[5]; 
 	};
 
 	my $solarflux_complete_data = "(".$num.") ".$solarflux_def;
@@ -291,7 +292,7 @@ Ham::Resources::Propagation - Get Solar and propagation data from web that's use
 
 =head1 VERSION
 
-Version 0.01
+Version 0.03
 
 =head1 SYNOPSIS
 
@@ -317,7 +318,7 @@ Version 0.01
 
   # Access to unique data item
 	# for direct access to Solar data
-  print "Update: ".$propagation->{solar}->{updated}."\n"; 
+  print "Update: ".$propagation->{solar_data}->{updated}."\n"; 
 	
 	# or access to data using get method if you don't know the category of an item
   print "80-40m at night: ".$propagation->get('80-40m_night');
@@ -340,7 +341,7 @@ This module is based on XML::Reader to obtain a hash from the original XML websi
 
 For example:
 
-	$propagation->{solar}->{aindex}, returns the A-Index value from the Solar group
+	$propagation->{solar_data}->{aindex}, returns the A-Index value from the Solar group
 
 	$propagation->get(aindex), returns the A-Index value without need to add the group
 

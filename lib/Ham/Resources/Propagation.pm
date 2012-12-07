@@ -9,7 +9,7 @@ use Data::Dumper;
 
 use vars qw($VERSION);
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 my $data_url = 'http://www.hamqsl.com/solarxml.php';
 my $site_name = 'hamqsl.com';
@@ -292,7 +292,7 @@ Ham::Resources::Propagation - Get Solar and propagation data from web that's use
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =head1 SYNOPSIS
 

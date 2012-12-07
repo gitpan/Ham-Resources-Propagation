@@ -9,7 +9,7 @@ WriteMakefile(
     MIN_PERL_VERSION  => 5.014,
     PREREQ_PM         => {
     		'LWP::UserAgent'	=> 6,
-    		'XML::Reader'		=> 0,
+    		'XML::Reader::PP'		=> 0,
     }, # e.g., Module::Name => 1.1
 
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
